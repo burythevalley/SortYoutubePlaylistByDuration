@@ -1,28 +1,3 @@
-/**
- *  Changelog 02/04/2026 (3.3.0)
- *  - Single-video channels are now sorted by duration and placed after grouped channels in channel sort modes
- *
- *  Changelog 02/04/2026 (3.2.0)
- *  - Added channel-based sort modes: Channel (A→Z), Channel + Shortest First, Channel + Longest First
- *
- *  Changelog 08/08/2024
- *  - Attempt to address the most serious of buggy code, script should now work in all but the longest playlist.
- *
- *  Changelog 07/08/2024
- *  - Emergency fix for innerHTML violations
- *  - Script is now loaded at any YT page - allowing the script to load whenever user hot-navigates to a playlist page without reloading
- *
- *  Changelog 24/12/2023
- *  - Fixed an issue where recommended videos at the end of the list breaks sorting (due to the lack of reorder anchors)
- *  - Attempted fix for "Upcoming" or any other non-timestamped based videos, sorting to bottom (operating on principle that split(':') will produce at least 2 elements on timestamps)
- *  - Renaming the script to more accurately reflects its capability
- *  - Change license to fit SPDX license list
- *  - Minor code cleanups
- *
- *  Changelog 11/02/2023
- *  - Migrated to a full proper repo to better support discussions, issues and pull requests
- */
-
 /* jshint esversion: 8 */
 // ==UserScript==
 // @name              Sort Youtube Playlist by Duration & Channel
