@@ -1,5 +1,8 @@
 /**
- *  Changelog 02/04/2026
+ *  Changelog 02/04/2026 (3.3.0)
+ *  - Single-video channels are now sorted by duration and placed after grouped channels in channel sort modes
+ *
+ *  Changelog 02/04/2026 (3.2.0)
  *  - Added channel-based sort modes: Channel (A→Z), Channel + Shortest First, Channel + Longest First
  *
  *  Changelog 08/08/2024
@@ -24,7 +27,7 @@
 // ==UserScript==
 // @name              Sort Youtube Playlist by Duration & Channel
 // @namespace         https://github.com/burythevalley
-// @version           3.2.0
+// @version           3.3.0
 // @description       Sorts YouTube playlists by duration and/or channel name
 // @author            burythevalley
 // @license           GPL-2.0-only
@@ -343,12 +346,22 @@ let sortVideos = (allAnchors, allDragPoints, expectedCount) => {
         videos.sort((a, b) => a.time - b.time);
     } else if (sortMode === 'desc') {
         videos.sort((a, b) => b.time - a.time);
-    } else if (sortMode === 'channel') {
-        videos.sort((a, b) => a.channel.localeCompare(b.channel));
-    } else if (sortMode === 'channel-asc') {
-        videos.sort((a, b) => a.channel.localeCompare(b.channel) || a.time - b.time);
-    } else if (sortMode === 'channel-desc') {
-        videos.sort((a, b) => a.channel.localeCompare(b.channel) || b.time - a.time);
+    } else if (sortMode === 'channel' || sortMode === 'channel-asc' || sortMode === 'channel-desc') {
+        const channelCount = {};
+        videos.forEach(v => { channelCount[v.channel] = (channelCount[v.channel] || 0) + 1; });
+
+        const multi = videos.filter(v => channelCount[v.channel] > 1);
+        const singles = videos.filter(v => channelCount[v.channel] === 1);
+
+        if (sortMode === 'channel-desc') {
+            multi.sort((a, b) => a.channel.localeCompare(b.channel) || b.time - a.time);
+            singles.sort((a, b) => b.time - a.time);
+        } else {
+            multi.sort((a, b) => a.channel.localeCompare(b.channel) || a.time - b.time);
+            singles.sort((a, b) => a.time - b.time);
+        }
+
+        videos = [...multi, ...singles];
     }
 
     for (let j = 0; j < videos.length; j++) {
