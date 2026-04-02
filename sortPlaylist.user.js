@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name              Sort Youtube Playlist by Duration & Channel
 // @namespace         https://github.com/burythevalley/SortYoutubePlaylistByDuration
-// @version           3.4.0
+// @version           3.5.0
 // @description       Sorts YouTube playlists by duration and/or channel name
 // @author            burythevalley
 // @license           GPL-2.0-only
@@ -42,36 +42,60 @@ let onElementReady = (selector, callback) => {
 const css =
     `
         .sort-playlist-div {
-            font-size: 12px;
-            padding: 3px 1px;
+            font-family: "Roboto", "Arial", sans-serif;
+            font-size: 1.4rem;
+            padding: 4px 0;
         }
         .sort-button-wl {
-            border: 1px #a0a0a0;
-            border-radius: 2px;
-            padding: 3px;
+            font-family: inherit;
+            font-size: 1.4rem;
+            font-weight: 500;
+            line-height: 2rem;
+            height: 32px;
+            padding: 0 12px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
+            color: var(--yt-spec-text-primary, #fff);
+            background-color: var(--yt-spec-button-chip-background-hover, #3d3d3d);
+            margin-right: 8px;
         }
-        .sort-button-wl-default {
-            background-color: #30d030;
+        .sort-button-wl:hover {
+            opacity: 0.85;
+        }
+        .sort-button-wl:active {
+            opacity: 0.7;
         }
         .sort-button-wl-stop {
-            background-color: #d03030;
+            background-color: #cc0000;
+            color: #fff;
         }
-        .sort-button-wl-default:active {
-            background-color: #209020;
+        .sort-button-wl-stop:hover {
+            background-color: #aa0000;
         }
-        .sort-button-wl-stop:active {
-            background-color: #902020;
+        .sort-select {
+            font-family: "Roboto", "Arial", sans-serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            height: 32px;
+            padding: 0 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--yt-spec-text-primary, #fff);
+            background-color: var(--yt-spec-button-chip-background-hover, #3d3d3d);
+            margin-bottom: 6px;
+            display: block;
+            appearance: auto;
         }
         .sort-log {
-            padding: 3px;
-            margin-top: 3px;
-            border-radius: 2px;
-            background-color: #202020;
-            color: #e0e0e0;
-        }
-        .sort-margin-right-3px {
-            margin-right: 3px;
+            font-family: "Roboto", "Arial", sans-serif;
+            font-size: 1.2rem;
+            padding: 6px 10px;
+            margin-top: 6px;
+            border-radius: 8px;
+            background-color: var(--yt-spec-button-chip-background-hover, #202020);
+            color: var(--yt-spec-text-primary, #e0e0e0);
         }
     `
 
@@ -82,11 +106,6 @@ const modeAvailable = [
     { value: 'asc', label: 'Shortest First' },
 ];
 
-const autoScrollOptions = [
-    { value: true, label: 'Sort all' },
-    { value: false, label: 'Sort only loaded' }
-]
-
 const debug = false;
 
 var scrollLoopTime = 600;
@@ -95,11 +114,26 @@ const validModes = modeAvailable.map(m => m.value);
 const savedMode = localStorage.getItem('sortPlaylistMode');
 let sortMode = validModes.includes(savedMode) ? savedMode : 'channel-desc';
 
-let autoScrollInitialVideoList = true;
-
 let log = document.createElement('div');
 
 let stopSort = false;
+let lastTotalRuntime = 0;
+
+/**
+ * Format seconds into a human-readable duration string (e.g. "2h 15m 30s")
+ * @param {number} totalSeconds
+ * @return {string}
+ */
+let formatDuration = (totalSeconds) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    let parts = [];
+    if (hours > 0) parts.push(hours + 'h');
+    if (minutes > 0) parts.push(minutes + 'm');
+    if (seconds > 0 || parts.length === 0) parts.push(seconds + 's');
+    return parts.join(' ');
+};
 
 /**
  * Fire a mouse event on an element
@@ -217,11 +251,7 @@ let renderContainerElement = () => {
 let renderButtonElement = (click = () => { }, label = '', red = false) => {
     // Create button
     const element = document.createElement('button')
-    if (red) {
-        element.className = 'style-scope sort-button-wl sort-button-wl-stop sort-margin-right-3px'
-    } else {
-        element.className = 'style-scope sort-button-wl sort-button-wl-default sort-margin-right-3px'
-    }
+    element.className = red ? 'sort-button-wl sort-button-wl-stop' : 'sort-button-wl'
     element.innerText = label
     element.onclick = click
 
@@ -238,13 +268,11 @@ let renderButtonElement = (click = () => { }, label = '', red = false) => {
 let renderSelectElement = (variable = 0, options = [], label = '') => {
     // Create select
     const element = document.createElement('select');
-    element.className = 'style-scope sort-margin-right-3px';
+    element.className = 'sort-select';
     element.onchange = (e) => {
         if (variable === 0) {
             sortMode = e.target.value;
             localStorage.setItem('sortPlaylistMode', sortMode);
-        } else if (variable === 1) {
-            autoScrollInitialVideoList = e.target.value;
         }
     };
 
@@ -271,14 +299,15 @@ let renderSelectElement = (variable = 0, options = [], label = '') => {
 let renderNumberElement = (defaultValue = 0, label = '') => {
     // Create div
     const elementDiv = document.createElement('div');
-    elementDiv.className = 'sort-playlist-div sort-margin-right-3px';
+    elementDiv.className = 'sort-playlist-div';
     elementDiv.innerText = label;
 
     // Create input
     const element = document.createElement('input');
     element.type = 'number';
     element.value = defaultValue;
-    element.className = 'style-scope';
+    element.className = 'sort-select';
+    element.style.width = '80px';
     element.oninput = (e) => { scrollLoopTime = +(e.target.value) };
 
     // Render input
@@ -291,7 +320,7 @@ let renderNumberElement = (defaultValue = 0, label = '') => {
  */
 let renderLogElement = () => {
     // Populate div
-    log.className = 'style-scope sort-log';
+    log.className = 'sort-log';
     log.innerText = 'Logging...';
 
     // Render input
@@ -343,6 +372,11 @@ let sortVideos = (allAnchors, allDragPoints, expectedCount) => {
         let channel = thumb.closest("ytd-playlist-video-renderer")?.querySelector("#channel-name a")?.innerText?.trim() || '';
         videos.push({ anchor: drag, time: time, channel: channel, originalIndex: j });
     }
+
+    // Calculate total runtime, excluding non-timestamped sentinel values
+    lastTotalRuntime = videos.reduce((sum, v) => {
+        return (v.time > 0 && v.time < 999999999999999999) ? sum + v.time : sum;
+    }, 0);
 
     if (sortMode === 'asc') {
         videos.sort((a, b) => a.time - b.time);
@@ -409,9 +443,8 @@ let activateSort = async () => {
 
     while (reportedVideoCount !== initialVideoCount
         && document.URL.includes("playlist?list=")
-        && stopSort === false
-        && autoScrollInitialVideoList === true) {
-        logActivity("Loading more videos - " + allDragPoints.length + " videos loaded");
+        && stopSort === false) {
+        logActivity("Loading all videos... " + allDragPoints.length + "/" + reportedVideoCount);
         if (scrollRetryCount > 5) {
             break;
         } else if (scrollRetryCount > 0) {
@@ -467,7 +500,7 @@ let activateSort = async () => {
         logActivity("Sort cancelled.");
         stopSort = false;
     } else {
-        logActivity("Sort complete. Video sorted: " + sortedCount);
+        logActivity("Sort complete. " + sortedCount + " videos sorted.\nTotal runtime: " + formatDuration(lastTotalRuntime));
     }
 };
 
@@ -481,7 +514,6 @@ let init = () => {
         renderButtonElement(async () => { await activateSort() }, 'Sort Videos', false);
         renderButtonElement(() => { stopSort = true }, 'Stop Sort', true);
         renderSelectElement(0, modeAvailable, 'Sort Mode');
-        renderSelectElement(1, autoScrollOptions, 'Auto Scroll');
         renderNumberElement(600, 'Scroll Retry Time (ms)');
         renderLogElement();
     });

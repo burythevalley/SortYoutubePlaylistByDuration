@@ -1,6 +1,6 @@
 # Sort Youtube Playlist by Duration & Channel
 
-Forked from [KohGeek/SortYoutubePlaylistByDuration](https://github.com/KohGeek/SortYoutubePlaylistByDuration) to add channel name sorting.
+A userscript that sorts YouTube playlists by duration and/or channel name. Your preferred sort mode is remembered between sessions. Shows total playlist runtime after sorting.
 
 ## Sort Modes
 
@@ -24,4 +24,4 @@ Requires a userscript manager such as [Tampermonkey](https://www.tampermonkey.ne
 
 ## Credits
 
-Forked from [KohGeek/SortYoutubePlaylistByDuration](https://github.com/KohGeek/SortYoutubePlaylistByDuration). Channel sorting added by [burythevalley](https://github.com/burythevalley).
+Forked from [KohGeek/SortYoutubePlaylistByDuration](https://github.com/KohGeek/SortYoutubePlaylistByDuration). Channel sorting and additional features by [burythevalley](https://github.com/burythevalley).
