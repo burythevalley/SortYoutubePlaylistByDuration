@@ -27,7 +27,7 @@
 // ==UserScript==
 // @name              Sort Youtube Playlist by Duration & Channel
 // @namespace         https://github.com/burythevalley
-// @version           3.3.0
+// @version           3.3.1
 // @description       Sorts YouTube playlists by duration and/or channel name
 // @author            burythevalley
 // @license           GPL-2.0-only
@@ -353,12 +353,13 @@ let sortVideos = (allAnchors, allDragPoints, expectedCount) => {
         const multi = videos.filter(v => channelCount[v.channel] > 1);
         const singles = videos.filter(v => channelCount[v.channel] === 1);
 
-        if (sortMode === 'channel-desc') {
-            multi.sort((a, b) => a.channel.localeCompare(b.channel) || b.time - a.time);
-            singles.sort((a, b) => b.time - a.time);
-        } else {
+        if (sortMode === 'channel-asc') {
             multi.sort((a, b) => a.channel.localeCompare(b.channel) || a.time - b.time);
             singles.sort((a, b) => a.time - b.time);
+        } else {
+            // 'channel' and 'channel-desc' both default to longest first
+            multi.sort((a, b) => a.channel.localeCompare(b.channel) || b.time - a.time);
+            singles.sort((a, b) => b.time - a.time);
         }
 
         videos = [...multi, ...singles];
