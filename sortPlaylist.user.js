@@ -8,11 +8,33 @@
 // @license           GPL-2.0-only
 // @match             http://*.youtube.com/*
 // @match             https://*.youtube.com/*
-// @require           https://greasyfork.org/scripts/374849-library-onelementready-es7/code/Library%20%7C%20onElementReady%20ES7.js
 // @supportURL        https://github.com/burythevalley/SortYoutubePlaylistByDuration/issues
 // @grant             none
 // @run-at            document-start
 // ==/UserScript==
+
+/**
+ * Wait for a DOM element matching a CSS selector to appear, then fire a callback.
+ * @param {string} selector - CSS selector to watch for
+ * @param {function} callback - Called with the matched element
+ */
+let onElementReady = (selector, callback) => {
+    const existing = document.querySelector(selector);
+    if (existing) { callback(existing); return; }
+
+    const observer = new MutationObserver(() => {
+        const element = document.querySelector(selector);
+        if (element) {
+            observer.disconnect();
+            callback(element);
+        }
+    });
+
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+};
 
 /**
  * Variables and constants
@@ -453,7 +475,7 @@ let activateSort = async () => {
  * Initialisation wrapper for all on-screen elements.
  */
 let init = () => {
-    onElementReady('div.thumbnail-and-metadata-wrapper', false, () => {
+    onElementReady('div.thumbnail-and-metadata-wrapper', () => {
         renderContainerElement();
         addCssStyle();
         renderButtonElement(async () => { await activateSort() }, 'Sort Videos', false);
