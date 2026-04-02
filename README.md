@@ -15,8 +15,8 @@ Channels with only one video in the playlist are treated as "one-offs" and place
 
 | Mode | Multi-video channels | Single-video channels |
 |---|---|---|
-| Channel (A→Z), Shortest First | Grouped A→Z, shortest first | Shortest first, at the end |
 | Channel (A→Z), Longest First | Grouped A→Z, longest first | Longest first, at the end |
+| Channel (A→Z), Shortest First | Grouped A→Z, shortest first | Shortest first, at the end |
 
 ## Installation
 
