@@ -2,7 +2,7 @@
 // ==UserScript==
 // @name              Sort Youtube Playlist by Duration & Channel
 // @namespace         https://github.com/burythevalley/SortYoutubePlaylistByDuration
-// @version           3.3.2
+// @version           3.4.0
 // @description       Sorts YouTube playlists by duration and/or channel name
 // @author            burythevalley
 // @license           GPL-2.0-only
@@ -69,7 +69,9 @@ const debug = false;
 
 var scrollLoopTime = 600;
 
-let sortMode = 'channel-desc';
+const validModes = modeAvailable.map(m => m.value);
+const savedMode = localStorage.getItem('sortPlaylistMode');
+let sortMode = validModes.includes(savedMode) ? savedMode : 'channel-desc';
 
 let autoScrollInitialVideoList = true;
 
@@ -218,6 +220,7 @@ let renderSelectElement = (variable = 0, options = [], label = '') => {
     element.onchange = (e) => {
         if (variable === 0) {
             sortMode = e.target.value;
+            localStorage.setItem('sortPlaylistMode', sortMode);
         } else if (variable === 1) {
             autoScrollInitialVideoList = e.target.value;
         }
@@ -230,6 +233,9 @@ let renderSelectElement = (variable = 0, options = [], label = '') => {
         optionElement.innerText = option.label
         element.appendChild(optionElement)
     });
+
+    // Pre-select persisted value
+    if (variable === 0) element.value = sortMode;
 
     // Render select
     document.querySelector('.sort-playlist-select').appendChild(element);
@@ -349,7 +355,7 @@ let sortVideos = (allAnchors, allDragPoints, expectedCount) => {
             let elemDrag = videos[j].anchor;
             let elemDrop = videos.find((v) => v.originalIndex === j).anchor;
 
-            logActivity("Drag " + originalIndex + " to " + j);
+            logActivity("Sorting " + (j + 1) + "/" + videos.length + "...");
             simulateDrag(elemDrag, elemDrop);
             dragged = true;
         }
@@ -431,6 +437,7 @@ let activateSort = async () => {
         }
 
         sortedCount = Number(sortVideos(allAnchors, allDragPoints, initialVideoCount) + 1);
+        logActivity("Sorting " + sortedCount + "/" + initialVideoCount + "...");
         await new Promise(r => setTimeout(r, scrollLoopTime * 4));
     }
 
