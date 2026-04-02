@@ -4,10 +4,10 @@ Forked from [KohGeek/SortYoutubePlaylistByDuration](https://github.com/KohGeek/S
 
 ## Sort Modes
 
-- **Shortest First** — sort all videos shortest to longest
-- **Longest First** — sort all videos longest to shortest
-- **Channel (A→Z), Shortest First** — group by channel alphabetically, shortest first within each group
 - **Channel (A→Z), Longest First** — group by channel alphabetically, longest first within each group
+- **Channel (A→Z), Shortest First** — group by channel alphabetically, shortest first within each group
+- **Longest First** — sort all videos longest to shortest
+- **Shortest First** — sort all videos shortest to longest
 
 ### Channel mode behaviour
 

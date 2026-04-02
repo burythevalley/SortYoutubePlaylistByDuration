@@ -79,10 +79,10 @@ const css =
     `
 
 const modeAvailable = [
-    { value: 'asc', label: 'Shortest First' },
-    { value: 'desc', label: 'Longest First' },
-    { value: 'channel-asc', label: 'Channel (A→Z), Shortest First' },
     { value: 'channel-desc', label: 'Channel (A→Z), Longest First' },
+    { value: 'channel-asc', label: 'Channel (A→Z), Shortest First' },
+    { value: 'desc', label: 'Longest First' },
+    { value: 'asc', label: 'Shortest First' },
 ];
 
 const autoScrollOptions = [
@@ -94,7 +94,7 @@ const debug = false;
 
 var scrollLoopTime = 600;
 
-let sortMode = 'asc';
+let sortMode = 'channel-desc';
 
 let autoScrollInitialVideoList = true;
 
