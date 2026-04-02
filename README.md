@@ -6,9 +6,8 @@ Forked from [KohGeek/SortYoutubePlaylistByDuration](https://github.com/KohGeek/S
 
 - **Shortest First** — sort all videos shortest to longest
 - **Longest First** — sort all videos longest to shortest
-- **Channel (A→Z)** — group videos alphabetically by channel
-- **Channel (A→Z), Shortest First** — group by channel, then shortest first within each
-- **Channel (A→Z), Longest First** — group by channel, then longest first within each
+- **Channel (A→Z), Shortest First** — group by channel alphabetically, shortest first within each group
+- **Channel (A→Z), Longest First** — group by channel alphabetically, longest first within each group
 
 ### Channel mode behaviour
 
@@ -16,7 +15,6 @@ Channels with only one video in the playlist are treated as "one-offs" and place
 
 | Mode | Multi-video channels | Single-video channels |
 |---|---|---|
-| Channel (A→Z) | Grouped A→Z, longest first | Longest first, at the end |
 | Channel (A→Z), Shortest First | Grouped A→Z, shortest first | Shortest first, at the end |
 | Channel (A→Z), Longest First | Grouped A→Z, longest first | Longest first, at the end |
 

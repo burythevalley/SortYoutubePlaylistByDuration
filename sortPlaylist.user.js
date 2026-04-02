@@ -27,7 +27,7 @@
 // ==UserScript==
 // @name              Sort Youtube Playlist by Duration & Channel
 // @namespace         https://github.com/burythevalley
-// @version           3.3.1
+// @version           3.3.2
 // @description       Sorts YouTube playlists by duration and/or channel name
 // @author            burythevalley
 // @license           GPL-2.0-only
@@ -81,7 +81,6 @@ const css =
 const modeAvailable = [
     { value: 'asc', label: 'Shortest First' },
     { value: 'desc', label: 'Longest First' },
-    { value: 'channel', label: 'Channel (A→Z)' },
     { value: 'channel-asc', label: 'Channel (A→Z), Shortest First' },
     { value: 'channel-desc', label: 'Channel (A→Z), Longest First' },
 ];
@@ -346,7 +345,7 @@ let sortVideos = (allAnchors, allDragPoints, expectedCount) => {
         videos.sort((a, b) => a.time - b.time);
     } else if (sortMode === 'desc') {
         videos.sort((a, b) => b.time - a.time);
-    } else if (sortMode === 'channel' || sortMode === 'channel-asc' || sortMode === 'channel-desc') {
+    } else if (sortMode === 'channel-asc' || sortMode === 'channel-desc') {
         const channelCount = {};
         videos.forEach(v => { channelCount[v.channel] = (channelCount[v.channel] || 0) + 1; });
 
@@ -357,7 +356,6 @@ let sortVideos = (allAnchors, allDragPoints, expectedCount) => {
             multi.sort((a, b) => a.channel.localeCompare(b.channel) || a.time - b.time);
             singles.sort((a, b) => a.time - b.time);
         } else {
-            // 'channel' and 'channel-desc' both default to longest first
             multi.sort((a, b) => a.channel.localeCompare(b.channel) || b.time - a.time);
             singles.sort((a, b) => b.time - a.time);
         }
