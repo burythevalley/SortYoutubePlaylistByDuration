@@ -34,7 +34,7 @@
 // @match             http://*.youtube.com/*
 // @match             https://*.youtube.com/*
 // @require           https://greasyfork.org/scripts/374849-library-onelementready-es7/code/Library%20%7C%20onElementReady%20ES7.js
-// @supportURL        https://github.com/burythevalley
+// @supportURL        https://github.com/burythevalley/SortYoutubePlaylistByDuration/issues
 // @grant             none
 // @run-at            document-start
 // ==/UserScript==
