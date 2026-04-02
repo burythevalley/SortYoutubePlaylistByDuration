@@ -1,4 +1,7 @@
 /**
+ *  Changelog 02/04/2026
+ *  - Added channel-based sort modes: Channel (A→Z), Channel + Shortest First, Channel + Longest First
+ *
  *  Changelog 08/08/2024
  *  - Attempt to address the most serious of buggy code, script should now work in all but the longest playlist.
  *
@@ -20,15 +23,15 @@
 /* jshint esversion: 8 */
 // ==UserScript==
 // @name              Sort Youtube Playlist by Duration
-// @namespace         https://github.com/KohGeek/SortYoutubePlaylistByDuration
-// @version           3.1.0
-// @description       As the name implies, sorts youtube playlist by duration
-// @author            KohGeek
+// @namespace         https://github.com/burythevalley
+// @version           3.2.0
+// @description       Sorts YouTube playlists by duration and/or channel name
+// @author            burythevalley
 // @license           GPL-2.0-only
 // @match             http://*.youtube.com/*
 // @match             https://*.youtube.com/*
 // @require           https://greasyfork.org/scripts/374849-library-onelementready-es7/code/Library%20%7C%20onElementReady%20ES7.js
-// @supportURL        https://github.com/KohGeek/SortYoutubePlaylistByDuration/
+// @supportURL        https://github.com/burythevalley
 // @grant             none
 // @run-at            document-start
 // ==/UserScript==
@@ -74,7 +77,10 @@ const css =
 
 const modeAvailable = [
     { value: 'asc', label: 'Shortest First' },
-    { value: 'desc', label: 'Longest First' }
+    { value: 'desc', label: 'Longest First' },
+    { value: 'channel', label: 'Channel (A→Z)' },
+    { value: 'channel-asc', label: 'Channel (A→Z), Shortest First' },
+    { value: 'channel-desc', label: 'Channel (A→Z), Longest First' },
 ];
 
 const autoScrollOptions = [
@@ -329,13 +335,20 @@ let sortVideos = (allAnchors, allDragPoints, expectedCount) => {
             if (timeDigits[1]) time += parseInt(timeDigits[1]) * 60;
             if (timeDigits[2]) time += parseInt(timeDigits[2]) * 3600;
         }
-        videos.push({ anchor: drag, time: time, originalIndex: j });
+        let channel = thumb.closest("ytd-playlist-video-renderer")?.querySelector("#channel-name a")?.innerText?.trim() || '';
+        videos.push({ anchor: drag, time: time, channel: channel, originalIndex: j });
     }
 
-    if (sortMode == "asc") {
+    if (sortMode === 'asc') {
         videos.sort((a, b) => a.time - b.time);
-    } else {
+    } else if (sortMode === 'desc') {
         videos.sort((a, b) => b.time - a.time);
+    } else if (sortMode === 'channel') {
+        videos.sort((a, b) => a.channel.localeCompare(b.channel));
+    } else if (sortMode === 'channel-asc') {
+        videos.sort((a, b) => a.channel.localeCompare(b.channel) || a.time - b.time);
+    } else if (sortMode === 'channel-desc') {
+        videos.sort((a, b) => a.channel.localeCompare(b.channel) || b.time - a.time);
     }
 
     for (let j = 0; j < videos.length; j++) {
