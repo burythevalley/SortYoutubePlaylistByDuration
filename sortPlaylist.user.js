@@ -306,7 +306,7 @@ let sortVideos = (allAnchors, allDragPoints, expectedCount) => {
         let timeDigits = timeSpan.innerText.trim().split(":").reverse();
         let time;
         if (timeDigits.length == 1) {
-            sortMode == "asc" ? time = 999999999999999999 : time = -1;
+            (sortMode === "asc" || sortMode === "channel-asc") ? time = 999999999999999999 : time = -1;
         } else {
             time = parseInt(timeDigits[0]);
             if (timeDigits[1]) time += parseInt(timeDigits[1]) * 60;
@@ -390,10 +390,10 @@ let activateSort = async () => {
             logActivity(log.innerText + "\nReported video count does not match actual video count.\nPlease make sure you remove all unavailable videos.\nAttempt: " + scrollRetryCount + "/5")
         }
 
-        if (allDragPoints.length > 300) {
-            logActivity(log.innerText + "\nNumber of videos loaded is high, sorting may take a long time");
-        } else if (allDragPoints.length > 600) {
+        if (allDragPoints.length > 600) {
             logActivity(log.innerText + "\nSorting may take extremely long time/is likely to bug out");
+        } else if (allDragPoints.length > 300) {
+            logActivity(log.innerText + "\nNumber of videos loaded is high, sorting may take a long time");
         }
 
         await autoScroll();
@@ -422,7 +422,7 @@ let activateSort = async () => {
         while (!allAnchors[initialVideoCount - 1].querySelector("#text") && stopSort === false) {
             if (document.scrollingElement.scrollTop < loadedLocation && scrollRetryCount < 3) {
                 logActivity("Video " + initialVideoCount + " is not loaded yet, attempting to scroll.");
-                await autoScroll(currentLocation);
+                await autoScroll(loadedLocation);
                 scrollRetryCount++;
             } else {
                 logActivity("Video " + initialVideoCount + " is still not loaded. Brute forcing scroll.");
