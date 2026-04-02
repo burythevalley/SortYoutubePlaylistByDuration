@@ -1,6 +1,6 @@
 # Sort Youtube Playlist by Duration & Channel
 
-A userscript that sorts YouTube playlists by duration and/or channel name. Your preferred sort mode is remembered between sessions. Shows total playlist runtime after sorting.
+A userscript that sorts YouTube playlists by duration and/or channel name. Your preferred sort mode is remembered between sessions. Shows total playlist runtime after sorting. UI is styled to match YouTube's native design and adapts to light/dark mode automatically.
 
 ## Sort Modes
 
