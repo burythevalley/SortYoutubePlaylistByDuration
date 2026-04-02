@@ -22,7 +22,7 @@
 
 /* jshint esversion: 8 */
 // ==UserScript==
-// @name              Sort Youtube Playlist by Duration
+// @name              Sort Youtube Playlist by Duration & Channel
 // @namespace         https://github.com/burythevalley
 // @version           3.2.0
 // @description       Sorts YouTube playlists by duration and/or channel name
